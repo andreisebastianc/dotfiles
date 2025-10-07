@@ -2,14 +2,8 @@
 -- This will avoid an annoying layout shift in the screen
 vim.opt.signcolumn = 'yes'
 
--- Add cmp_nvim_lsp capabilities settings to lspconfig
--- This should be executed before you configure any language server
-local lspconfig_defaults = require('lspconfig').util.default_config
-lspconfig_defaults.capabilities = vim.tbl_deep_extend(
-'force',
-lspconfig_defaults.capabilities,
-require('cmp_nvim_lsp').default_capabilities()
-)
+-- Get default capabilities from cmp_nvim_lsp
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- This is where you enable features that only work
 -- if there is a language server active in the file
@@ -31,14 +25,38 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- from
--- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
---
+-- Language server configurations
 -- npm install -g @ember-tooling/ember-language-server
-require('lspconfig').ember.setup({})
+vim.lsp.config.ember = {
+    cmd = { 'ember-language-server', '--stdio' },
+    filetypes = { 'handlebars', 'typescript', 'javascript', 'typescript.glimmer', 'javascript.glimmer' },
+    root_markers = { '.git', 'ember-cli-build.js' },
+    capabilities = capabilities,
+}
+
 -- npm install -g typescript typescript-language-server
-require('lspconfig').ts_ls.setup({})
+vim.lsp.config.ts_ls = {
+    cmd = { 'typescript-language-server', '--stdio' },
+    filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
+    root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
+    capabilities = capabilities,
+}
+
 -- npm i -g css-variables-language-server
-require('lspconfig').css_variables.setup({})
+vim.lsp.config.css_variables = {
+    cmd = { 'css-variables-language-server', '--stdio' },
+    filetypes = { 'css', 'scss', 'less' },
+    root_markers = { 'package.json', '.git' },
+    capabilities = capabilities,
+}
+
 -- npm i -g vscode-langservers-extracted
-require('lspconfig').eslint.setup({})
+vim.lsp.config.eslint = {
+    cmd = { 'vscode-eslint-language-server', '--stdio' },
+    filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx', 'vue', 'svelte', 'astro' },
+    root_markers = { '.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.yaml', '.eslintrc.yml', '.eslintrc.json', 'package.json' },
+    capabilities = capabilities,
+}
+
+-- Enable the language servers
+vim.lsp.enable({ 'ember', 'ts_ls', 'css_variables', 'eslint' })
