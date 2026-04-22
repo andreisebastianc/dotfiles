@@ -37,6 +37,7 @@
   ── Diagnostics ───────────────────────────────────────────
   <leader>xx      Toggle diagnostics (trouble)
   <leader>xX      Buffer diagnostics (trouble)
+  <leader>xt      TODOs (Trouble)
   <leader>l       Trigger lint manually
   <C-k> / <C-j>   Next/prev quickfix
   <leader>k / j   Next/prev loclist
