@@ -47,6 +47,8 @@
   <leader>zz      Zen mode (numbered)
   <leader>zZ      Zen mode (minimal)
   <leader>mp      Format file/selection (conform)
+  <leader>nn      Open project notes (fuzzy + preview)
+  <leader>na      Add a note
   <leader>?       Show ALL keymaps (which-key)
   <leader>ch      Show this cheatsheet
   <C-f>           Tmux sessionizer
