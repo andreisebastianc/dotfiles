@@ -1,3 +1,18 @@
+-- Ensure version managers (rbenv, goenv, etc.) are visible to LSP/linters
+-- even when nvim isn't launched from a fully-sourced shell.
+local home = os.getenv("HOME") or ""
+local extra_paths = {
+    home .. "/.rbenv/shims",
+    home .. "/.rbenv/bin",
+    home .. "/.goenv/shims",
+    home .. "/.goenv/bin",
+}
+for _, p in ipairs(extra_paths) do
+    if vim.fn.isdirectory(p) == 1 and not vim.env.PATH:find(p, 1, true) then
+        vim.env.PATH = p .. ":" .. vim.env.PATH
+    end
+end
+
 vim.opt.guicursor = ""
 
 vim.opt.nu = true
@@ -28,7 +43,5 @@ vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
-
-vim.g.mapleader = " " 
 
 vim.g.lazyvim_prettier_needs_config = false

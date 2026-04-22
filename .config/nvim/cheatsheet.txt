@@ -1,0 +1,58 @@
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║                    cheatsheet.txt                       ║
+  ║          edit me: ~/.config/nvim/cheatsheet.txt         ║
+  ╚══════════════════════════════════════════════════════════╝
+
+  ── Navigation ────────────────────────────────────────────
+  <leader>pv      Open netrw file explorer
+  <leader>pf      Find files (telescope)
+  <leader>pg      Git files (telescope)
+  <leader>ps      Grep search (telescope)
+  <C-e>           Harpoon quick menu
+  <leader>a       Add file to harpoon
+  <C-h/t/n/s>     Harpoon slots 1-4
+
+  ── LSP ───────────────────────────────────────────────────
+  gd / gD         Go to definition / declaration
+  gi / go         Implementation / type definition
+  gr              References
+  gs              Signature help
+  K               Hover docs
+  <F2>            Rename symbol
+  <F3>            Format (LSP)
+  <F4>            Code action
+
+  ── Toggles ───────────────────────────────────────────────
+  <leader>td      Toggle diagnostics display (buffer)
+  <leader>tl      Toggle LSP on/off (buffer)
+  <leader>tf      Toggle format-on-save (buffer)
+
+  ── Editing ───────────────────────────────────────────────
+  <leader>y / Y   Yank to system clipboard
+  <leader>p       Paste without yanking replaced text (visual)
+  <leader>s       Substitute word under cursor
+  J/K (visual)    Move selection down/up
+
+  ── Diagnostics ───────────────────────────────────────────
+  <leader>xx      Toggle diagnostics (trouble)
+  <leader>xX      Buffer diagnostics (trouble)
+  <leader>l       Trigger lint manually
+  <C-k> / <C-j>   Next/prev quickfix
+  <leader>k / j   Next/prev loclist
+
+  ── Other ─────────────────────────────────────────────────
+  <leader>u       Undo tree
+  <leader>gs      Git (fugitive)
+  <leader>zz      Zen mode (numbered)
+  <leader>zZ      Zen mode (minimal)
+  <leader>mp      Format file/selection (conform)
+  <leader>?       Show ALL keymaps (which-key)
+  <leader>ch      Show this cheatsheet
+  <C-f>           Tmux sessionizer
+
+  ── Setup reminders (new machine) ─────────────────────────
+  Ruby/Rails:  sudo zypper in ruby-devel && gem install rubocop ruby-lsp
+  Go:          install go, then Mason handles gopls + goimports
+  Zig:         install zig, Mason handles zls
+  All:         open nvim and :Lazy sync, then :MasonToolsInstall
