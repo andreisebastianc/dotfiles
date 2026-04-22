@@ -35,28 +35,21 @@ local function show_cheatsheet_telescope()
 	}):find()
 end
 
--- Startup screen: reuse buffer 1 instead of creating a new one.
--- Creating + wiping buffers during VimEnter races with treesitter.
+-- Startup: show cheatsheet in a full-screen float over the untouched buf 1.
+-- This avoids treesitter conflicts — buf 1 is never modified.
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		if vim.fn.argc() > 0 or vim.fn.line2byte(vim.fn.line("$")) ~= -1 then
 			return
 		end
 
-		local buf = vim.api.nvim_get_current_buf()
-
-		-- Disable treesitter on this buffer before adding content
-		pcall(vim.treesitter.stop, buf)
-
-		vim.bo[buf].buftype = "nofile"
-		vim.bo[buf].bufhidden = "hide"
-		vim.bo[buf].buflisted = false
-		vim.bo[buf].swapfile = false
-		vim.bo[buf].filetype = ""
-
 		local lines = read_cheatsheet()
 
-		local win_height = vim.api.nvim_win_get_height(0)
+		local buf = vim.api.nvim_create_buf(false, true)
+
+		local win_width = vim.o.columns
+		local win_height = vim.o.lines - 2
+
 		local pad = math.max(0, math.floor((win_height - #lines) / 2))
 		local padded = {}
 		for _ = 1, pad do
@@ -68,7 +61,41 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 		vim.api.nvim_buf_set_lines(buf, 0, -1, false, padded)
 		vim.bo[buf].modifiable = false
-		-- bufhidden=wipe handles cleanup automatically when a real file opens
+
+		local win = vim.api.nvim_open_win(buf, true, {
+			relative = "editor",
+			row = 0,
+			col = 0,
+			width = win_width,
+			height = win_height,
+			style = "minimal",
+			zindex = 1,
+		})
+
+		local function close()
+			if vim.api.nvim_win_is_valid(win) then
+				vim.api.nvim_win_close(win, true)
+			end
+		end
+
+		vim.keymap.set("n", "<leader>pf", function()
+			close()
+			require("telescope.builtin").find_files()
+		end, { buffer = buf, desc = "Find files" })
+
+		vim.keymap.set("n", "<leader>pg", function()
+			close()
+			require("telescope.builtin").git_files()
+		end, { buffer = buf, desc = "Git files" })
+
+		vim.keymap.set("n", "<leader>pv", function()
+			close()
+			vim.cmd.Ex()
+		end, { buffer = buf, desc = "Open netrw" })
+
+		for _, key in ipairs({ "q", "<Esc>", "<CR>" }) do
+			vim.keymap.set("n", key, close, { buffer = buf, nowait = true })
+		end
 	end,
 })
 
