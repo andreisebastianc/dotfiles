@@ -3,16 +3,26 @@ return {
 	event = "BufWritePre",
 	config = function()
 		local conform = require("conform")
+		local prettier = { "prettier" }
 
 		conform.setup({
 			formatters_by_ft = {
-				javascript = { "prettier" },
-				typescript = { "prettier" },
-				css = { "prettier" },
-				html = { "prettier" },
-				json = { "prettier" },
-				yaml = { "prettier" },
-				markdown = { "prettier" },
+				javascript = prettier,
+				javascriptreact = prettier,
+				typescript = prettier,
+				typescriptreact = prettier,
+				css = prettier,
+				scss = prettier,
+				less = prettier,
+				html = prettier,
+				json = prettier,
+				jsonc = prettier,
+				yaml = prettier,
+				markdown = prettier,
+				graphql = prettier,
+				vue = prettier,
+				svelte = prettier,
+				handlebars = prettier,
 				ruby = { "rubocop" },
 				eruby = { "rubocop" },
 				go = { "gofmt", "goimports" },
