@@ -9,6 +9,7 @@
   <leader>pf      Find files (telescope)
   <leader>pg      Git files (telescope)
   <leader>ps      Grep search (telescope)
+  <leader>pn      Run package.json script (telescope)
   <C-e>           Harpoon quick menu
   <leader>a       Add file to harpoon
   <C-h/t/n/s>     Harpoon slots 1-4
