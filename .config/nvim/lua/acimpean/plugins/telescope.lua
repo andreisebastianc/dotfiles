@@ -11,4 +11,25 @@ return {
 			desc = "Grep search",
 		},
 	},
+	config = function()
+		require("telescope").setup({
+			defaults = {
+				file_ignore_patterns = {
+					"node_modules/",
+					"%.git/",
+					"dist/",
+					"build/",
+					"%.next/",
+					"target/",
+					"vendor/",
+					"%.DS_Store",
+				},
+			},
+			pickers = {
+				find_files = {
+					find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+				},
+			},
+		})
+	end,
 }
