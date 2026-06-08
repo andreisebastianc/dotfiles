@@ -20,7 +20,6 @@ return {
 				"ember-language-server",
 				"typescript-language-server",
 				"css-variables-language-server",
-				"eslint-lsp",
 				"ruby-lsp",
 				"gopls",
 				"zls",
@@ -30,6 +29,7 @@ return {
 				"rubocop",
 				"goimports",
 
+				"eslint_d",
 				"pylint",
 				"golangci-lint",
 			},

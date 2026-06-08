@@ -17,9 +17,6 @@ local diag_hidden = {
 	float = { border = "rounded", source = "if_many" },
 }
 
--- Start with diagnostics hidden — they appear after first save
-vim.diagnostic.config(diag_hidden)
-
 local function show_diagnostics()
 	vim.diagnostic.config(diag_shown)
 end
@@ -28,14 +25,16 @@ local function hide_diagnostics()
 	vim.diagnostic.config(diag_hidden)
 end
 
--- Show diagnostics after save
-vim.api.nvim_create_autocmd("BufWritePost", {
-	callback = show_diagnostics,
-})
+-- Diagnostics are visible whenever you're not actively typing: shown on open,
+-- save, and after leaving insert; hidden while in insert mode to avoid flicker.
+show_diagnostics()
 
--- Hide while editing so they don't flicker
 vim.api.nvim_create_autocmd("InsertEnter", {
 	callback = hide_diagnostics,
+})
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+	callback = show_diagnostics,
 })
 
 -- Completion options for built-in LSP completion
@@ -74,7 +73,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Enable servers (config comes from lsp/<name>.lua files in runtimepath)
-vim.lsp.enable({ "ember", "ts_ls", "css_variables", "eslint", "ruby_lsp", "gopls", "zls" })
+vim.lsp.enable({ "ember", "ts_ls", "css_variables", "ruby_lsp", "gopls", "zls" })
 
 -- Toggle LSP for the current buffer
 local lsp_buffers_stopped = {}

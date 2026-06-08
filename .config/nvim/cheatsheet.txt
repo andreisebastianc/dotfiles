@@ -40,6 +40,7 @@
   <leader>xX      Buffer diagnostics (trouble)
   <leader>xt      TODOs (Trouble)
   <leader>l       Trigger lint manually
+  <leader>ef      ESLint --fix current file
   <C-k> / <C-j>   Next/prev quickfix
   <leader>k / j   Next/prev loclist
 
