@@ -1,40 +1,16 @@
--- Diagnostic display styles
-local diag_shown = {
-	severity_sort = true,
-	underline = { severity = vim.diagnostic.severity.ERROR },
-	virtual_text = false,
-	virtual_lines = { current_line = true },
-	signs = true,
-	float = { border = "rounded", source = "if_many" },
-}
-
-local diag_hidden = {
-	severity_sort = true,
-	underline = false,
-	virtual_text = false,
-	virtual_lines = false,
-	signs = false,
-	float = { border = "rounded", source = "if_many" },
-}
-
-local function show_diagnostics()
-	vim.diagnostic.config(diag_shown)
-end
-
-local function hide_diagnostics()
-	vim.diagnostic.config(diag_hidden)
-end
-
--- Diagnostics are visible whenever you're not actively typing: shown on open,
--- save, and after leaving insert; hidden while in insert mode to avoid flicker.
-show_diagnostics()
+-- Diagnostic display styles live in acimpean.diagnostics (shared with
+-- trouble.nvim). Diagnostics are visible whenever you're not actively
+-- typing: shown on open, save, and after leaving insert; hidden while in
+-- insert mode to avoid flicker.
+local diagnostics = require("acimpean.diagnostics")
+diagnostics.show()
 
 vim.api.nvim_create_autocmd("InsertEnter", {
-	callback = hide_diagnostics,
+	callback = diagnostics.hide,
 })
 
 vim.api.nvim_create_autocmd("InsertLeave", {
-	callback = show_diagnostics,
+	callback = diagnostics.show,
 })
 
 -- Completion options for built-in LSP completion

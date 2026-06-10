@@ -16,11 +16,7 @@ return {
 			"<leader>xx",
 			function()
 				-- Show inline diagnostics before opening the panel
-				vim.diagnostic.config({
-					underline = { severity = vim.diagnostic.severity.ERROR },
-					virtual_lines = { current_line = true },
-					signs = true,
-				})
+				require("acimpean.diagnostics").show()
 				vim.cmd("Trouble diagnostics toggle")
 			end,
 			desc = "Diagnostics (Trouble)",
@@ -28,11 +24,7 @@ return {
 		{
 			"<leader>xX",
 			function()
-				vim.diagnostic.config({
-					underline = { severity = vim.diagnostic.severity.ERROR },
-					virtual_lines = { current_line = true },
-					signs = true,
-				})
+				require("acimpean.diagnostics").show()
 				vim.cmd("Trouble diagnostics toggle filter.buf=0")
 			end,
 			desc = "Buffer Diagnostics (Trouble)",
