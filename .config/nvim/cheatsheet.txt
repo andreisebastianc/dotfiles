@@ -61,3 +61,8 @@
   Go:          install go, then Mason handles gopls + goimports
   Zig:         install zig, Mason handles zls
   All:         open nvim and :Lazy sync, then :MasonToolsInstall
+
+  ── Gotchas ───────────────────────────────────────────────
+  Prettier only formats when the repo has a prettier config
+  (rc file or "prettier" key in package.json) — no config, no
+  format-on-save. Same for <leader>mp on JS/TS files.
