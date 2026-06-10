@@ -1,14 +1,25 @@
 return {
 	"mfussenegger/nvim-lint",
-	event = "BufWritePost",
+	-- BufReadPost is needed too: the config registers a lint-on-open autocmd,
+	-- which never fired when the plugin itself only loaded on first save.
+	event = { "BufReadPost", "BufWritePost" },
 	config = function()
 		local lint = require("lint")
 
-		lint.linters_by_ft = {
-			ruby = { "rubocop" },
-			go = { "golangcilint" },
-			python = { "pylint" },
+		-- Ruby is deliberately absent: ruby-lsp already surfaces rubocop
+		-- diagnostics via the project's bundle (right version, right plugins).
+		-- Only register linters whose binary exists on this machine.
+		local linters_by_ft = {
+			go = { linter = "golangcilint", bin = "golangci-lint" },
+			python = { linter = "pylint", bin = "pylint" },
 		}
+
+		lint.linters_by_ft = {}
+		for ft, l in pairs(linters_by_ft) do
+			if vim.fn.executable(l.bin) == 1 then
+				lint.linters_by_ft[ft] = { l.linter }
+			end
+		end
 
 		-- ESLint is handled separately (below) so it only runs when the project
 		-- actually has an eslint config — keeps it quiet in non-eslint projects.
@@ -41,7 +52,9 @@ return {
 			if not dir or dir == "" then
 				return false
 			end
-			return #vim.fs.find(eslint_markers, { upward = true, path = dir }) > 0
+			-- Stop at the home directory so a stray ~/.eslintrc doesn't
+			-- enable eslint for every project on the machine.
+			return #vim.fs.find(eslint_markers, { upward = true, path = dir, stop = vim.uv.os_homedir() }) > 0
 		end
 
 		local function run_eslint()
@@ -51,13 +64,13 @@ return {
 		end
 
 		local function run_lint()
-			lint.try_lint() -- filetype-configured linters (rubocop, pylint, golangcilint)
+			lint.try_lint() -- filetype-configured linters (pylint, golangcilint)
 			run_eslint()
 		end
 
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
-		-- Heavier linters (rubocop/pylint/golangci) run on save only.
+		-- Heavier linters (pylint/golangci) run on save only.
 		vim.api.nvim_create_autocmd("BufWritePost", {
 			group = lint_augroup,
 			callback = run_lint,
