@@ -2,5 +2,7 @@
 return {
 	cmd = { "ember-language-server", "--stdio" },
 	filetypes = { "handlebars", "typescript", "javascript", "typescript.glimmer", "javascript.glimmer" },
-	root_markers = { ".git", "ember-cli-build.js" },
+	-- Only ember-cli-build.js — with ".git" as a marker this server attached
+	-- to every JS/TS file in every git repo, not just Ember projects.
+	root_markers = { "ember-cli-build.js" },
 }
