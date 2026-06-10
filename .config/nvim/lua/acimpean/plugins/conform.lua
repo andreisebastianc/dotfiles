@@ -23,11 +23,20 @@ return {
 				vue = prettier,
 				svelte = prettier,
 				handlebars = prettier,
-				ruby = { "rubocop" },
-				eruby = { "rubocop" },
+				-- Ruby is deliberately absent: format_on_save falls back to
+				-- LSP, and ruby-lsp formats with the project's own rubocop
+				-- (right version + plugins), not a global copy.
 				go = { "gofmt", "goimports" },
 				zig = { "zigfmt" },
 				lua = { "stylua" },
+			},
+			formatters = {
+				prettier = {
+					-- Only format when the project actually has a prettier
+					-- config (rc file or a "prettier" key in package.json);
+					-- conform also prefers the repo's node_modules prettier.
+					require_cwd = true,
+				},
 			},
 			format_on_save = function(bufnr)
 				if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
