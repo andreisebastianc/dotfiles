@@ -1,7 +1,6 @@
 require("acimpean.lazy")
 require("acimpean.set")
 require("acimpean.remap")
-require("acimpean.commands")
 require("acimpean.lsp")
 require("acimpean.notes")
 require("acimpean.npm_scripts")

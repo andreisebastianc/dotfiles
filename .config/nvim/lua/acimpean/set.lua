@@ -73,5 +73,3 @@ vim.opt.colorcolumn = "80"
 -- Source .nvim.lua in project root for per-project overrides.
 -- Neovim only runs trusted files (prompts on first encounter).
 vim.opt.exrc = true
-
-vim.g.lazyvim_prettier_needs_config = false
