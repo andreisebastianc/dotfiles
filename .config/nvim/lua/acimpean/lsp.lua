@@ -72,8 +72,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- Enable servers (config comes from lsp/<name>.lua files in runtimepath)
-vim.lsp.enable({ "ember", "ts_ls", "css_variables", "ruby_lsp", "gopls", "zls" })
+-- Enable servers (config comes from lsp/<name>.lua files in runtimepath).
+-- Each server is enabled only if its binary exists on this machine, so a
+-- missing toolchain (e.g. no Ruby/Go on a given box) doesn't produce
+-- "failed to spawn" errors when opening files. Mason's bin dir is already
+-- on PATH at this point (mason.nvim loads during lazy.setup).
+local servers = {
+	ember = "ember-language-server",
+	ts_ls = "typescript-language-server",
+	css_variables = "css-variables-language-server",
+	ruby_lsp = "ruby-lsp",
+	gopls = "gopls",
+	zls = "zls",
+}
+
+for name, bin in pairs(servers) do
+	if vim.fn.executable(bin) == 1 then
+		vim.lsp.enable(name)
+	end
+end
 
 -- Toggle LSP for the current buffer
 local lsp_buffers_stopped = {}
