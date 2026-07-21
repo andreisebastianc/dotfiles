@@ -1,0 +1,26 @@
+# Ghostty configuration
+# Ported from .config/wezterm/wezterm.lua
+
+# Font: Fira Code at 17pt (wezterm: font_size = 17, Fira Code)
+font-family = Fira Code
+font-size = 17
+
+# Disable ligatures (wezterm: harfbuzz_features calt=0, clig=0, liga=0)
+font-feature = -calt
+font-feature = -clig
+font-feature = -liga
+
+# No title bar, keep resizable window (wezterm: window_decorations = "RESIZE")
+window-decoration = false
+
+# Padding: 10px on top only (wezterm: top = 10, others = 0)
+# x = left,right   y = top,bottom
+window-padding-x = 0
+window-padding-y = 10,0
+
+# Ghostty hides the tab bar automatically when only one tab is open,
+# matching wezterm's hide_tab_bar_if_only_one_tab = true.
+
+# Note: the wezterm ZEN_MODE user-var handler (live font scaling from
+# zen-mode.nvim) has no Ghostty equivalent — Ghostty has no scripting or
+# event API to react to terminal escape sequences.
