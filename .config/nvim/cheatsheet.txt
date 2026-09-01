@@ -21,7 +21,7 @@
   gs              Signature help
   K               Hover docs
   <F2>            Rename symbol
-  <F3>            Format (LSP)
+  <F3>            Format (conform, same as save)
   <F4>            Code action
 
   ── Toggles ───────────────────────────────────────────────
@@ -47,6 +47,9 @@
   ── Other ─────────────────────────────────────────────────
   <leader>u       Undo tree
   <leader>gs      Git (fugitive)
+  <leader>gd      Diff working tree (diffview)
+  <leader>gh      File history (diffview)
+  <leader>gl      Line/selection history, git log -L (diffview)
   <leader>zz      Zen mode (numbered)
   <leader>zZ      Zen mode (minimal)
   <leader>mp      Format file/selection (conform)
@@ -57,6 +60,7 @@
   <C-f>           Tmux sessionizer
 
   ── Setup reminders (new machine) ─────────────────────────
+  Treesitter:  needs a C compiler + curl + tar (CLI via Mason)
   Ruby/Rails:  sudo zypper in ruby-devel && gem install rubocop ruby-lsp
   Go:          install go, then Mason handles gopls + goimports
   Zig:         install zig, Mason handles zls
@@ -65,4 +69,8 @@
   ── Gotchas ───────────────────────────────────────────────
   Prettier only formats when the repo has a prettier config
   (rc file or "prettier" key in package.json) — no config, no
-  format-on-save. Same for <leader>mp on JS/TS files.
+  format-on-save. Same for <leader>mp / <F3> on JS/TS files.
+  :ConformInfo explains which formatter runs (or why not).
+  Changed eslint config and nothing updates? `eslint_d restart`.
+  :LspBufToggle (<leader>tl) is per buffer; the built-in
+  :lsp restart / :lsp stop act on clients. :LspLog opens the log.

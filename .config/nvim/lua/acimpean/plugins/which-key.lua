@@ -15,7 +15,6 @@ return {
 			{ "<leader>m", group = "misc / format" },
 			{ "<leader>g", group = "git" },
 			{ "<leader>t", group = "toggles" },
-			{ "<leader>y", group = "yank to clipboard" },
 		},
 	},
 	keys = {

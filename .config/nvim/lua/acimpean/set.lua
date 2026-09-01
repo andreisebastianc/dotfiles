@@ -16,15 +16,17 @@ if not nvm_bin then
     local alias_file = nvm_dir .. "/alias/default"
     local f = io.open(alias_file, "r")
     if f then
-        local alias = f:read("*l"):gsub("%s+", "")
+        local alias = (f:read("*l") or ""):gsub("%s+", "")
         f:close()
-        -- Alias can be a major version ("22") or full ("v22.17.1").
-        -- Glob to find the matching installed version.
-        local pattern = nvm_dir .. "/versions/node/v" .. alias .. "*/bin"
-        local matches = vim.fn.glob(pattern, false, true)
-        if #matches > 0 then
-            table.sort(matches)
-            nvm_bin = matches[#matches]
+        if alias ~= "" then
+            -- Alias can be a major version ("22") or full ("v22.17.1").
+            -- Glob to find the matching installed version.
+            local pattern = nvm_dir .. "/versions/node/v" .. alias .. "*/bin"
+            local matches = vim.fn.glob(pattern, false, true)
+            if #matches > 0 then
+                table.sort(matches)
+                nvm_bin = matches[#matches]
+            end
         end
     end
 end
