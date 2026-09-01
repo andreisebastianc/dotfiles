@@ -13,7 +13,6 @@ return {
 						vim.wo.rnu = true
 					end,
 				})
-				ColorMyPencils()
 			end,
 			desc = "Zen mode (numbered)",
 		},
@@ -32,7 +31,6 @@ return {
 						vim.opt.colorcolumn = "80"
 					end,
 				})
-				ColorMyPencils()
 			end,
 			desc = "Zen mode (minimal)",
 		},
