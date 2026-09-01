@@ -1,5 +1,13 @@
 return {
 	{
+		-- Server definitions (cmd, filetypes, root detection, per-project
+		-- node_modules binaries, …) as lsp/<name>.lua files that Neovim's
+		-- native vim.lsp.config reads. Our overrides live in after/lsp/<name>.lua,
+		-- which is later in 'runtimepath' and therefore merged on top.
+		"neovim/nvim-lspconfig",
+		lazy = false,
+	},
+	{
 		"mason-org/mason.nvim",
 		opts = {
 			ui = {
@@ -34,6 +42,9 @@ return {
 
 				"eslint_d",
 				"pylint",
+
+				-- nvim-treesitter (main) needs the CLI to build parsers.
+				"tree-sitter-cli",
 			}
 
 			-- Mason builds gopls/goimports with `go install`; golangci-lint is

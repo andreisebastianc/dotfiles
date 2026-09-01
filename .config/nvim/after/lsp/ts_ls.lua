@@ -1,17 +1,7 @@
--- npm install -g typescript typescript-language-server
--- Works with TypeScript 7 (tsgo) — ts_ls wraps the compiler regardless of
--- whether it's the JS or Go implementation.
+-- Overrides on top of nvim-lspconfig's lsp/ts_ls.lua (which also prefers the
+-- project's node_modules/.bin/typescript-language-server and handles
+-- monorepo/deno roots). Works with TypeScript 7 (tsgo) too.
 return {
-	cmd = { "typescript-language-server", "--stdio" },
-	filetypes = {
-		"javascript",
-		"javascriptreact",
-		"javascript.jsx",
-		"typescript",
-		"typescriptreact",
-		"typescript.tsx",
-	},
-	root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
 	settings = {
 		typescript = {
 			preferences = {

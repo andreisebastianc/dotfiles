@@ -35,7 +35,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		map("n", "gr", vim.lsp.buf.references, "LSP references")
 		map("n", "gs", vim.lsp.buf.signature_help, "LSP signature help")
 		map("n", "<F2>", vim.lsp.buf.rename, "LSP rename")
-		map({ "n", "x" }, "<F3>", function() vim.lsp.buf.format({ async = true }) end, "LSP format")
+		-- Goes through conform so the same formatter (prettier/stylua/…)
+		-- runs whether you press F3 or save.
+		map({ "n", "x" }, "<F3>", function() require("conform").format() end, "Format (conform)")
 		map("n", "<F4>", vim.lsp.buf.code_action, "LSP code action")
 
 		if client and client:supports_method("textDocument/completion") then
@@ -48,7 +50,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- Enable servers (config comes from lsp/<name>.lua files in runtimepath).
+-- Enable servers. Definitions come from nvim-lspconfig's lsp/<name>.lua,
+-- with our tweaks merged on top from after/lsp/<name>.lua.
 -- Each server is enabled only if its binary exists on this machine, so a
 -- missing toolchain (e.g. no Ruby/Go on a given box) doesn't produce
 -- "failed to spawn" errors when opening files. Mason's bin dir is already
@@ -68,7 +71,8 @@ for name, bin in pairs(servers) do
 	end
 end
 
--- Toggle LSP for the current buffer
+-- Toggle LSP for the current buffer. Named LspBuf* to stay clear of the
+-- built-in `:lsp enable|disable|restart|stop`, which acts on whole clients.
 local lsp_buffers_stopped = {}
 
 local function stop_lsp_for_buffer(bufnr)
@@ -97,11 +101,11 @@ local function start_lsp_for_buffer(bufnr)
 	vim.notify("LSP restarted for buffer (filetype: " .. ft .. ")", vim.log.levels.INFO)
 end
 
-vim.api.nvim_create_user_command("LspStop", function() stop_lsp_for_buffer() end,
+vim.api.nvim_create_user_command("LspBufStop", function() stop_lsp_for_buffer() end,
 	{ desc = "Detach all LSP clients from current buffer" })
-vim.api.nvim_create_user_command("LspStart", function() start_lsp_for_buffer() end,
+vim.api.nvim_create_user_command("LspBufStart", function() start_lsp_for_buffer() end,
 	{ desc = "Re-attach LSP clients to current buffer" })
-vim.api.nvim_create_user_command("LspToggle", function()
+vim.api.nvim_create_user_command("LspBufToggle", function()
 	local bufnr = vim.api.nvim_get_current_buf()
 	if lsp_buffers_stopped[bufnr] then
 		start_lsp_for_buffer(bufnr)
@@ -110,7 +114,7 @@ vim.api.nvim_create_user_command("LspToggle", function()
 	end
 end, { desc = "Toggle LSP for current buffer" })
 
-vim.keymap.set("n", "<leader>tl", "<cmd>LspToggle<cr>", { desc = "Toggle LSP (buffer)" })
+vim.keymap.set("n", "<leader>tl", "<cmd>LspBufToggle<cr>", { desc = "Toggle LSP (buffer)" })
 
 vim.api.nvim_create_user_command("DiagToggle", function()
 	local bufnr = vim.api.nvim_get_current_buf()
