@@ -1,6 +1,10 @@
 # Ghostty configuration
 # Ported from .config/wezterm/wezterm.lua
 
+# Matches the nvim colorscheme; nvim runs with a transparent background,
+# so this palette/background is what actually shows.
+theme = Catppuccin Mocha
+
 # Font: Fira Code at 17pt (wezterm: font_size = 17, Fira Code)
 font-family = Fira Code
 font-size = 17
