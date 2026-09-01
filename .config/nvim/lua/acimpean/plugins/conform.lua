@@ -1,11 +1,31 @@
 return {
 	"stevearc/conform.nvim",
 	event = "BufWritePre",
+	cmd = { "ConformInfo", "FormatDisable", "FormatEnable", "FormatToggle" },
+	keys = {
+		{
+			"<leader>mp",
+			function() require("conform").format() end,
+			mode = { "n", "v" },
+			desc = "Format file or selection",
+		},
+		{ "<leader>tf", "<cmd>FormatToggle<cr>", desc = "Toggle format-on-save (buffer)" },
+	},
 	config = function()
 		local conform = require("conform")
 		local prettier = { "prettier" }
 
 		conform.setup({
+			default_format_opts = {
+				-- Prettier from node_modules can take >1s on a cold start; the
+				-- old 1000ms limit produced spurious "formatter timed out" errors.
+				timeout_ms = 3000,
+				-- Never fall back to the LSP's formatter. With "fallback",
+				-- skipping prettier (no repo config) made conform hand the file
+				-- to ts_ls, which reformatted it with tsserver's own style.
+				-- Filetypes that *want* the LSP formatter opt in below.
+				lsp_format = "never",
+			},
 			formatters_by_ft = {
 				javascript = prettier,
 				javascriptreact = prettier,
@@ -23,9 +43,10 @@ return {
 				vue = prettier,
 				svelte = prettier,
 				handlebars = prettier,
-				-- Ruby is deliberately absent: format_on_save falls back to
-				-- LSP, and ruby-lsp formats with the project's own rubocop
-				-- (right version + plugins), not a global copy.
+				-- Ruby has no CLI formatter here on purpose: ruby-lsp formats
+				-- with the project's own rubocop (right version + plugins).
+				ruby = { lsp_format = "fallback" },
+				eruby = { lsp_format = "fallback" },
 				go = { "gofmt", "goimports" },
 				zig = { "zigfmt" },
 				lua = { "stylua" },
@@ -42,21 +63,9 @@ return {
 				if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
 					return
 				end
-				return {
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 1000,
-				}
+				return {}
 			end,
 		})
-
-		vim.keymap.set({ "n", "v" }, "<leader>mp", function()
-			conform.format({
-				lsp_fallback = true,
-				async = false,
-				timeout_ms = 1000,
-			})
-		end, { desc = "Format file or selection" })
 
 		vim.api.nvim_create_user_command("FormatDisable", function(args)
 			if args.bang then
@@ -81,7 +90,5 @@ return {
 				vim.notify("Format-on-save disabled (buffer)", vim.log.levels.INFO)
 			end
 		end, { desc = "Toggle format-on-save for current buffer" })
-
-		vim.keymap.set("n", "<leader>tf", "<cmd>FormatToggle<cr>", { desc = "Toggle format-on-save (buffer)" })
 	end,
 }
