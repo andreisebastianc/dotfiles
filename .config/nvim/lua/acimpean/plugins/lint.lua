@@ -1,8 +1,10 @@
 return {
 	"mfussenegger/nvim-lint",
-	-- BufReadPost is needed too: the config registers a lint-on-open autocmd,
-	-- which never fired when the plugin itself only loaded on first save.
-	event = { "BufReadPost", "BufWritePost" },
+	-- Load before the buffer is read so the lint-on-open autocmd below is
+	-- already registered for the first file. Loading on BufReadPost itself is
+	-- too late: lazy replays the event before filetype detection has run, so
+	-- the first buffer of a session was skipped (empty filetype).
+	event = { "BufReadPre", "BufNewFile", "BufWritePost" },
 	config = function()
 		local lint = require("lint")
 
@@ -30,6 +32,9 @@ return {
 			typescript = true,
 			typescriptreact = true,
 			["typescript.tsx"] = true,
+			-- Ember template-tag components (.gjs / .gts).
+			["javascript.glimmer"] = true,
+			["typescript.glimmer"] = true,
 			vue = true,
 			svelte = true,
 			astro = true,
@@ -57,10 +62,6 @@ return {
 			-- enable eslint for every project on the machine.
 			local found = vim.fs.find(eslint_markers, { upward = true, path = dir, stop = vim.uv.os_homedir() })[1]
 			return found and vim.fs.dirname(found) or nil
-		end
-
-		local function has_eslint_config()
-			return eslint_config_dir() ~= nil
 		end
 
 		-- Projects where eslint itself crashed (config imports a package that
@@ -98,7 +99,10 @@ return {
 			end
 			local dir = eslint_config_dir()
 			if dir and not eslint_broken[dir] then
-				lint.try_lint("eslint_d")
+				-- Run from the config's directory: ESLint 9 looks up flat
+				-- configs from the cwd, so a package-level config in a
+				-- monorepo is invisible from nvim's own cwd.
+				lint.try_lint("eslint_d", { cwd = dir })
 			end
 		end
 
@@ -139,13 +143,14 @@ return {
 				vim.notify("EslintFix: buffer has no file", vim.log.levels.WARN)
 				return
 			end
-			if not (eslint_filetypes[vim.bo[bufnr].filetype] and has_eslint_config()) then
+			local dir = eslint_filetypes[vim.bo[bufnr].filetype] and eslint_config_dir(bufnr)
+			if not dir then
 				vim.notify("EslintFix: no eslint config for this file", vim.log.levels.WARN)
 				return
 			end
 			-- Persist the buffer first so eslint_d fixes the latest content.
 			vim.cmd("silent noautocmd update")
-			vim.system({ "eslint_d", "--fix", file }, { text = true }, function(obj)
+			vim.system({ "eslint_d", "--fix", file }, { text = true, cwd = dir }, function(obj)
 				vim.schedule(function()
 					-- exit 2 = fatal (bad config); 1 = unfixable problems remain (fine).
 					if obj.code >= 2 then
