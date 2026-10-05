@@ -6,6 +6,10 @@ return {
 	branch = "main",
 	lazy = false, -- main does not support lazy-loading
 	build = ":TSUpdate",
+	-- Mason's setup() is what puts its bin dir (home of the tree-sitter CLI)
+	-- on PATH. lazy.nvim doesn't guarantee load order between start plugins,
+	-- so without this the CLI can be invisible when we install parsers.
+	dependencies = { "mason-org/mason.nvim" },
 	config = function()
 		local ts = require("nvim-treesitter")
 
@@ -34,12 +38,35 @@ return {
 
 		-- Install only what's missing; needs the tree-sitter CLI (Mason
 		-- installs it), a C compiler, curl and tar.
-		local installed = ts.get_installed("parsers")
-		local missing = vim.tbl_filter(function(p)
-			return not vim.tbl_contains(installed, p)
-		end, parsers)
-		if #missing > 0 then
-			ts.install(missing)
+		local function install_missing()
+			local installed = ts.get_installed("parsers")
+			local missing = vim.tbl_filter(function(p)
+				return not vim.tbl_contains(installed, p)
+			end, parsers)
+			if #missing > 0 then
+				ts.install(missing)
+			end
+		end
+
+		if vim.fn.executable("tree-sitter") == 1 then
+			install_missing()
+		else
+			-- Fresh machine: Mason hasn't installed the CLI yet. Wait for
+			-- mason-tool-installer to finish instead of failing with ENOENT.
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MasonToolsUpdateCompleted",
+				once = true,
+				callback = function()
+					if vim.fn.executable("tree-sitter") == 1 then
+						install_missing()
+					else
+						vim.notify(
+							"tree-sitter CLI not found; parsers not installed. Check :Mason (tree-sitter-cli) or install it system-wide.",
+							vim.log.levels.WARN
+						)
+					end
+				end,
+			})
 		end
 
 		-- Highlighting: start treesitter for any buffer whose language has a
