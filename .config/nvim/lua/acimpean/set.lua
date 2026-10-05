@@ -13,20 +13,40 @@ local extra_paths = {
 local nvm_bin = os.getenv("NVM_BIN")
 if not nvm_bin then
     local nvm_dir = os.getenv("NVM_DIR") or (home .. "/.nvm")
-    local alias_file = nvm_dir .. "/alias/default"
-    local f = io.open(alias_file, "r")
-    if f then
-        local alias = (f:read("*l") or ""):gsub("%s+", "")
+    local function read_alias(name)
+        local f = io.open(nvm_dir .. "/alias/" .. name, "r")
+        if not f then
+            return nil
+        end
+        local value = (f:read("*l") or ""):gsub("%s+", "")
         f:close()
-        if alias ~= "" then
-            -- Alias can be a major version ("22") or full ("v22.17.1").
-            -- Glob to find the matching installed version.
-            local pattern = nvm_dir .. "/versions/node/v" .. alias .. "*/bin"
-            local matches = vim.fn.glob(pattern, false, true)
-            if #matches > 0 then
-                table.sort(matches)
-                nvm_bin = matches[#matches]
+        return value ~= "" and value or nil
+    end
+
+    -- The default alias can be a version ("22", "v22.17.1"), another alias
+    -- ("lts/*" -> "lts/krypton" -> "v24.x.y"), or "node"/"stable" (newest
+    -- installed). Follow alias files until something version-like is left.
+    local alias = read_alias("default")
+    for _ = 1, 5 do
+        local target = alias and not alias:match("^v?%d") and read_alias(alias)
+        if not target then
+            break
+        end
+        alias = target
+    end
+
+    if alias then
+        local prefix = alias:match("^v?(%d[%d.]*)$") or ""
+        if prefix ~= "" or alias == "node" or alias == "stable" then
+            local matches = vim.fn.glob(nvm_dir .. "/versions/node/v" .. prefix .. "*/bin", false, true)
+            -- Newest version last; a plain string sort puts v22.9 after v22.17.
+            local function version(path)
+                return vim.version.parse(path:match("/v([%d.]+)/bin$") or "") or vim.version.parse("0.0.0")
             end
+            table.sort(matches, function(a, b)
+                return vim.version.lt(version(a), version(b))
+            end)
+            nvm_bin = matches[#matches]
         end
     end
 end
