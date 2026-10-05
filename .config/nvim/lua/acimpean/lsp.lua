@@ -32,7 +32,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		map("n", "gD", vim.lsp.buf.declaration, "LSP declaration")
 		map("n", "gi", vim.lsp.buf.implementation, "LSP implementation")
 		map("n", "go", vim.lsp.buf.type_definition, "LSP type definition")
-		map("n", "gr", vim.lsp.buf.references, "LSP references")
+		-- nowait: Neovim's default grr/grn/gra/gri mappings would otherwise
+		-- make a bare `gr` sit out 'timeoutlen' before firing.
+		vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, nowait = true, desc = "LSP references" })
 		map("n", "gs", vim.lsp.buf.signature_help, "LSP signature help")
 		map("n", "<F2>", vim.lsp.buf.rename, "LSP rename")
 		-- Goes through conform so the same formatter (prettier/stylua/…)
