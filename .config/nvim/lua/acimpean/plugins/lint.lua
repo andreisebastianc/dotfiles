@@ -47,18 +47,57 @@ return {
 			".eslintrc.json",
 		}
 
-		local function has_eslint_config()
-			local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+		-- Directory of the nearest eslint config for the buffer, or nil.
+		local function eslint_config_dir(bufnr)
+			local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr or 0))
 			if not dir or dir == "" then
-				return false
+				return nil
 			end
 			-- Stop at the home directory so a stray ~/.eslintrc doesn't
 			-- enable eslint for every project on the machine.
-			return #vim.fs.find(eslint_markers, { upward = true, path = dir, stop = vim.uv.os_homedir() }) > 0
+			local found = vim.fs.find(eslint_markers, { upward = true, path = dir, stop = vim.uv.os_homedir() })[1]
+			return found and vim.fs.dirname(found) or nil
+		end
+
+		local function has_eslint_config()
+			return eslint_config_dir() ~= nil
+		end
+
+		-- Projects where eslint itself crashed (config imports a package that
+		-- isn't installed, syntax error in the config, …). Whether a config
+		-- loads can't be known without running it, so the first failure warns
+		-- once and auto-linting then stays off for that project until a
+		-- manual <leader>l retries it.
+		local eslint_broken = {}
+
+		local eslint_d = lint.linters.eslint_d
+		local eslint_parser = eslint_d.parser
+		eslint_d.parser = function(output, bufnr, ...)
+			local trimmed = vim.trim(output)
+			-- Real results are a JSON array; anything else is a crash report.
+			if trimmed ~= "" and trimmed:sub(1, 1) ~= "[" and not trimmed:find("Could not find config file") then
+				local dir = eslint_config_dir(bufnr)
+				if dir and not eslint_broken[dir] then
+					eslint_broken[dir] = true
+					vim.notify(
+						("eslint failed to run in %s — linting disabled there (<leader>l to retry):\n%s"):format(
+							vim.fn.fnamemodify(dir, ":~"),
+							vim.split(trimmed, "\n")[1]
+						),
+						vim.log.levels.WARN
+					)
+				end
+				return {}
+			end
+			return eslint_parser(output, bufnr, ...)
 		end
 
 		local function run_eslint()
-			if eslint_filetypes[vim.bo.filetype] and has_eslint_config() then
+			if not eslint_filetypes[vim.bo.filetype] then
+				return
+			end
+			local dir = eslint_config_dir()
+			if dir and not eslint_broken[dir] then
 				lint.try_lint("eslint_d")
 			end
 		end
@@ -83,7 +122,14 @@ return {
 			callback = run_eslint,
 		})
 
-		vim.keymap.set("n", "<leader>l", run_lint, { desc = "Trigger linting for current file" })
+		vim.keymap.set("n", "<leader>l", function()
+			-- Manual trigger gives a broken eslint project another chance.
+			local dir = eslint_config_dir()
+			if dir then
+				eslint_broken[dir] = nil
+			end
+			run_lint()
+		end, { desc = "Trigger linting for current file" })
 
 		-- On-demand `eslint_d --fix` for the current file (not on save).
 		local function eslint_fix()
