@@ -1,0 +1,3 @@
+[submodule "vendor/tmux-sessionizer"]
+	path = vendor/tmux-sessionizer
+	url = https://github.com/ThePrimeagen/tmux-sessionizer.git

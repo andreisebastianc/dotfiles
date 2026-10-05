@@ -17,7 +17,17 @@ vim.keymap.set("n", "<leader>Y", "\"+Y", { desc = "Yank line to system clipboard
 
 vim.keymap.set("n", "Q", "<nop>")
 
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "Launch tmux-sessionizer" })
+-- tmux-sessionizer is ThePrimeagen's script, vendored as a submodule and
+-- linked onto PATH by install.sh.
+vim.keymap.set("n", "<C-f>", function()
+	if not vim.env.TMUX then
+		vim.notify("tmux-sessionizer: not inside tmux", vim.log.levels.WARN)
+	elseif vim.fn.executable("tmux-sessionizer") == 0 then
+		vim.notify("tmux-sessionizer is not on PATH (run install.sh)", vim.log.levels.WARN)
+	else
+		vim.cmd("silent !tmux neww tmux-sessionizer")
+	end
+end, { desc = "Launch tmux-sessionizer" })
 
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix item" })
 vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix item" })

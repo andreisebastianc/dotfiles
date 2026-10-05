@@ -4,6 +4,8 @@ Shared across several machines (Linux + macOS). Language servers, formatters
 and linters are gated on the toolchain that exists on each box, so nothing
 errors when e.g. Go isn't installed.
 
+Requires Neovim 0.12 or newer.
+
 ## Dependencies (install per machine)
 
 * `ripgrep` — telescope, `<leader>pn`
@@ -13,9 +15,12 @@ errors when e.g. Go isn't installed.
 * Ruby: `gem install ruby-lsp rubocop` in the project's Ruby (not Mason-managed
   on purpose — must match the project)
 * Go / Zig: install the toolchain, Mason handles gopls/goimports/zls
+* `fzf` — for `tmux-sessionizer` (`<C-f>`, tmux `prefix f`); the script itself
+  is a submodule of this repo and `install.sh` links it into `~/.local/bin`
 
-First start: `:Lazy sync`, then `:MasonToolsInstall`, then restart so the
-executable checks pick up the new binaries.
+First start: plugins, Mason tools and treesitter parsers install on their own
+(give it a minute). Then restart so the executable checks pick up the new
+binaries.
 
 Run `:checkhealth` after that; `:ConformInfo` shows which formatter will run
 for the current buffer and why one is skipped.

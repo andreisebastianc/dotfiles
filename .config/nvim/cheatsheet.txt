@@ -64,7 +64,7 @@
   Ruby/Rails:  sudo zypper in ruby-devel && gem install rubocop ruby-lsp
   Go:          install go, then Mason handles gopls + goimports
   Zig:         install zig, Mason handles zls
-  All:         open nvim and :Lazy sync, then :MasonToolsInstall
+  All:         open nvim, wait for plugins/Mason/parsers, restart
 
   ── Gotchas ───────────────────────────────────────────────
   Prettier only formats when the repo has a prettier config
