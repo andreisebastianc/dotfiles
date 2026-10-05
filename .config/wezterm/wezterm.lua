@@ -1,6 +1,10 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
+-- Matches the nvim colorscheme; nvim runs with a transparent background,
+-- so this palette/background is what actually shows.
+config.color_scheme = "Catppuccin Mocha"
+
 config.font_size = 17
 config.font = wezterm.font("Fira Code")
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }

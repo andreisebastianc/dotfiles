@@ -1,6 +1,15 @@
 return {
 	"folke/zen-mode.nvim",
-	opts = {},
+	opts = {
+		plugins = {
+			-- Drives the ZEN_MODE handler in wezterm.lua (bigger font, no tab
+			-- bar). Only under WezTerm; other terminals have no equivalent.
+			wezterm = {
+				enabled = vim.env.TERM_PROGRAM == "WezTerm" or vim.env.WEZTERM_PANE ~= nil,
+				font = "+4",
+			},
+		},
+	},
 	keys = {
 		{
 			"<leader>zz",
