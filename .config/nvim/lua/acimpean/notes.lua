@@ -7,11 +7,31 @@ local function get_notes_path()
 	return vim.fn.stdpath("data") .. "/nvim-notes.txt"
 end
 
+-- Keep a project's notes file out of `git status` (and accidental commits)
+-- via the repo-local .git/info/exclude, which is never shared.
+local function git_exclude(path)
+	local info_dir = vim.fs.dirname(path) .. "/.git/info"
+	if vim.fn.isdirectory(info_dir) == 0 then
+		return
+	end
+	local exclude = info_dir .. "/exclude"
+	local name = "/" .. vim.fs.basename(path)
+	if vim.fn.filereadable(exclude) == 1 and vim.tbl_contains(vim.fn.readfile(exclude), name) then
+		return
+	end
+	local f = io.open(exclude, "a")
+	if f then
+		f:write(name .. "\n")
+		f:close()
+	end
+end
+
 local function ensure_file(path)
 	if vim.fn.filereadable(path) == 0 then
 		local f = io.open(path, "w")
 		if f then f:close() end
 	end
+	git_exclude(path)
 end
 
 local function open_notes()

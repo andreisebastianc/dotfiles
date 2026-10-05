@@ -47,7 +47,8 @@ return {
 				-- with the project's own rubocop (right version + plugins).
 				ruby = { lsp_format = "fallback" },
 				eruby = { lsp_format = "fallback" },
-				go = { "gofmt", "goimports" },
+				-- goimports already applies gofmt; gofmt is only the fallback.
+				go = { "goimports", "gofmt", stop_after_first = true },
 				zig = { "zigfmt" },
 				lua = { "stylua" },
 			},
