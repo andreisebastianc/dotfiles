@@ -17,6 +17,11 @@ font-feature = -liga
 # No title bar, keep resizable window (wezterm: window_decorations = "RESIZE")
 window-decoration = false
 
+# Start every new window maximized — with no title bar there are no controls
+# to do it by hand. Not `fullscreen`: native fullscreen on macOS doesn't work
+# with window-decoration = false.
+maximize = true
+
 # Padding: 10px on top only (wezterm: top = 10, others = 0)
 # x = left,right   y = top,bottom
 window-padding-x = 0
