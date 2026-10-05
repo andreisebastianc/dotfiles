@@ -22,7 +22,9 @@ return {
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "mason-org/mason.nvim" },
-		event = "VeryLazy",
+		-- Must load at startup: run_on_start hangs off a VimEnter autocmd,
+		-- which has already fired by the time VeryLazy would load the plugin.
+		lazy = false,
 		opts = function()
 			-- This config runs on several machines with different toolchains.
 			-- Only ask Mason for tools it can actually build/run here, so a
