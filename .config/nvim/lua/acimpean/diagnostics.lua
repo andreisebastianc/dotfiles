@@ -5,8 +5,11 @@ local M = {}
 M.shown = {
 	severity_sort = true,
 	underline = { severity = vim.diagnostic.severity.ERROR },
-	virtual_text = false,
-	virtual_lines = { current_line = true },
+	-- Message at the end of the current line only. Not virtual_lines: those
+	-- insert a line under the cursor, which shifts the buffer up and down
+	-- while editing. Full text: <C-w>d (built-in) opens the float.
+	virtual_text = { current_line = true },
+	virtual_lines = false,
 	signs = true,
 	float = { border = "rounded", source = "if_many" },
 }
