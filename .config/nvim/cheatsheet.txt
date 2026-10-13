@@ -13,6 +13,7 @@
   <C-e>           Harpoon quick menu
   <leader>a       Add file to harpoon
   <C-h/t/n/s>     Harpoon slots 1-4
+  <M-p> / <M-n>   Harpoon prev / next
 
   ── LSP ───────────────────────────────────────────────────
   gd / gD         Go to definition / declaration

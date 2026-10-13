@@ -15,7 +15,9 @@ return {
 		vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end, { desc = "Harpoon slot 3" })
 		vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end, { desc = "Harpoon slot 4" })
 
-		vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end, { desc = "Harpoon prev" })
-		vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end, { desc = "Harpoon next" })
+		-- Alt rather than Ctrl+Shift: tmux flattens C-S-p to C-p unless extended
+		-- keys are on, and extended keys break Cmd+V paste in Ghostty on macOS.
+		vim.keymap.set("n", "<M-p>", function() harpoon:list():prev() end, { desc = "Harpoon prev" })
+		vim.keymap.set("n", "<M-n>", function() harpoon:list():next() end, { desc = "Harpoon next" })
 	end,
 }

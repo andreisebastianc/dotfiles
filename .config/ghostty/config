@@ -22,6 +22,11 @@ window-decoration = false
 # with window-decoration = false.
 maximize = true
 
+# macOS: send the left Option key as Alt so nvim's <M-p>/<M-n> (harpoon)
+# arrive as Alt+p/n instead of π/˜. The right Option keeps typing specials.
+# Ignored on Linux.
+macos-option-as-alt = left
+
 # Padding: 10px on top only (wezterm: top = 10, others = 0)
 # x = left,right   y = top,bottom
 window-padding-x = 0
